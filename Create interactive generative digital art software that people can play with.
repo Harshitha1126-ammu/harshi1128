@@ -1,0 +1,59 @@
+import React from "react";
+import Sketch from "react-p5"; // Correct import for react-p5
+
+const InteractiveArt = () => {
+  let particles = [];
+
+  const setup = (p5, canvasParentRef) => {
+    p5.createCanvas(800, 600).parent(canvasParentRef);
+  };
+
+  const draw = (p5) => {
+    p5.background(0);
+    particles.forEach((particle, index) => {
+      particle.move();
+      particle.display(p5);
+      if (particle.isOffScreen()) {
+        particles.splice(index, 1);
+      }
+    });
+  };
+
+  const mouseMoved = (p5) => {
+    particles.push(new Particle(p5.mouseX, p5.mouseY));
+  };
+
+  class Particle {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.size = Math.random() * 5 + 2;
+      this.color = [
+        Math.random() * 255,
+        Math.random() * 255,
+        Math.random() * 255,
+      ];
+      this.speedX = Math.random() * 2 - 1;
+      this.speedY = Math.random() * 2 - 1;
+    }
+
+    move() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+    }
+
+    display(p5) {
+      p5.fill(...this.color);
+      p5.noStroke();
+      p5.ellipse(this.x, this.y, this.size);
+    }
+
+    isOffScreen() {
+      return this.x < 0 || this.x > 800 || this.y < 0 || this.y > 600;
+    }
+  }
+
+  return <Sketch setup={setup} draw={draw} mouseMoved={mouseMoved} />;
+};
+
+export default InteractiveArt;
